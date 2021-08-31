@@ -1,0 +1,14 @@
+.graphInputs--form{
+    margin: 0px 0px 20px 10px;
+    display: grid;
+    grid-auto-flow: column; 
+    grid-auto-columns: 8.8%;
+    &__input{
+        width: 30px;
+        padding: 0.15em;
+        text-align: center;
+        &:last-child{
+            margin: 0 !important;
+        }
+    }
+}

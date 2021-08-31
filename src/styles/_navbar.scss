@@ -1,0 +1,28 @@
+
+.navbar{
+    padding: 1.5em;
+    background-color: $--whiteColor;
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: 50px;
+    z-index: 999;
+    &__heading{
+        margin-right: auto;
+    }
+    &__lnk{
+        padding: 0em .75em;
+        text-decoration: none;
+        color: $--activeGrey;
+        font-size: 1.2rem;
+        &:hover, &:focus{
+            color: $--blackColor;
+        }
+    }
+}

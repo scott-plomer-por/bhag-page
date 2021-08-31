@@ -2,11 +2,12 @@
 import { Line } from 'react-chartjs-2';
 
 
-const ChartOneGraph = ({graphOneData}) =>{
+
+const ChartTwoGraph = ({graphTwoData}) =>{
     
     let amountArr = [];
 
-    graphOneData.forEach(data=>{
+    graphTwoData.forEach(data=>{
         amountArr = [...amountArr, data.amount];
     })
 
@@ -22,7 +23,7 @@ const ChartOneGraph = ({graphOneData}) =>{
                         borderColor: ["green"],
                         borderWidth: 2,
                         lineTension: 0.4
-                    }, 
+                    },
                     {
                         label: 'target',
                         data: [40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51],
@@ -51,4 +52,4 @@ const ChartOneGraph = ({graphOneData}) =>{
     );
 }
 
-export default ChartOneGraph;
+export default ChartTwoGraph;

@@ -1,0 +1,12 @@
+.secondContent{
+    background: rgb(255,255,255);
+    background: linear-gradient(180deg, rgba(255,255,255,1) 0%, rgba(210,210,210,0.29735644257703087) 100%);
+    margin-top: 1em;
+}
+
+.secondContent--container{
+    padding: 2em 0em;
+    &__h4{
+        padding-bottom: 2rem;
+    }
+}

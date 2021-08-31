@@ -1,14 +1,14 @@
-import ChartOneGraph from "./ChartOneGraph";
-import ChartOneNew from "./ChartOneNew";
+import ChartTwoGraph from "./ChartTwoGraph";
+import ChartTwoNew from "./ChartTwoNew";
 import ChartValEdit from "../GenericComponets/ChartValEdit";
 
 import { useState } from "react";
 
-const ChartOneContainer = ({ handleSubmit, graphOneData, handleArryChange}) => {
+const ChartTwoContainer = ({ handleSubmit, graphTwoData, handleArryChange}) => {
 
     const [graphInputVal, setGraphInputVal] = useState ('');
-    const chartCollectionNameSpace = "graph-one-data";
-    const [backupGraphDataOne] = useState(graphOneData);
+    const chartCollectionNameSpace = "second-graph-data";
+    const [backupGraphDataTwo] = useState(graphTwoData);
 
     function handleChange(e){
         setGraphInputVal(e.target.value);
@@ -17,25 +17,25 @@ const ChartOneContainer = ({ handleSubmit, graphOneData, handleArryChange}) => {
 
     return ( 
         <div className = 'chart--wrapper'>
-            <ChartOneNew 
+            <ChartTwoNew 
                 handleChange = {handleChange} 
                 handleSubmit = {handleSubmit} 
                 graphInputVal = {graphInputVal}
                 chartCollectionNameSpace = {chartCollectionNameSpace}
                 setGraphInputVal = {setGraphInputVal}
-                chartData = {graphOneData}
+                chartData = {graphTwoData}
             />
-            <ChartOneGraph 
-                graphOneData = {graphOneData}
+            <ChartTwoGraph 
+                graphTwoData = {graphTwoData}
             />
             <ChartValEdit
-                graphData = {graphOneData} 
+                graphData = {graphTwoData} 
                 handleArryChange={handleArryChange}
                 chartCollectionNameSpace = {chartCollectionNameSpace}
-                backupGraphData = {backupGraphDataOne}
+                backupGraphData = {backupGraphDataTwo}
             />
         </div>
     );
 }
  
-export default ChartOneContainer;
+export default ChartTwoContainer;

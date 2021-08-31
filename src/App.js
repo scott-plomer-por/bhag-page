@@ -2,131 +2,123 @@ import DataInput from "./DataInput";
 import LoginPage from "./LoginPage";
 import Homepage from "./Homepage";
 
-import { db , fire} from "./Firebase";
-import { validateEmail } from "./Helpers";
-import { namespace, emailCheck } from "./HelperVars";
+import { db } from "./Firebase";
+import { namespace, emailCheck , clientID} from "./HelperVars";
 
 import { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Redirect } from "react-router-dom";
+import { GoogleLogin , GoogleLogout} from 'react-google-login';
+
+import axios from "axios";
 
 
 function App() {
 
 
-  const [graphOneData, setGraphOneData] = useState(()=> {return [];});
-  const [user, setUser] = useState(()=> {return '';});
-  const [email, setEmail] = useState(()=> {return '';});
-  const [password, setPassword] = useState(()=> {return '';});
-  const [emailError, setEmailError] = useState(()=> {return '';});
-  const [passwordError, setPasswordError] = useState(()=> {return '';});
-  const [isAdmin, setIsAdmin] = useState(()=> {return false});
-  const [wantsToSignIn, setwantsToSignin] = useState(()=>{return false});
-  const [graphOneInputVal, setGraphOneInputVal] = useState ('');
+  const [graphOneData, setGraphOneData] = useState([]);
+  const [graphTwoData, setGraphTwoData] = useState([]);
+
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [isUserLogIn, setisUserLogIn] = useState(false);
+  const [formName, setFormName] = useState('');
+  const [formEmail, setFormEmail] = useState('');
+  const [formMessage, setFormMessage] = useState('');
 
 
-  function handleChange(e){
-    setGraphOneInputVal(e.target.value);
+  const [nameFocus, setNameFocus] = useState(false);
+  const [emailFocus, setEmailFocus] = useState(false);
+  const [messageFocus, setMessageFocus] = useState(false);
+
+
+
+
+
+
+
+  function handleFormSubmit(e, fname, femail, fmsg){
+    e.preventDefault();
+    axios.get(`https://hooks.zapier.com/hooks/catch/895175/bu8ry8j/?fullname=${fname}&email=${femail}&message=${fmsg}`,   {transformRequest: [(data, headers) => {
+      delete headers.common.Authorization
+      return data
+  }]})
+    .then(function (response) {
+     console.log(response);
+   })
+   .catch(function (error) {
+     console.log(error);
+    });
+
+    setFormName('');
+    setFormEmail('');
+    setFormMessage('');
+    setNameFocus(false);
+    setEmailFocus(false);
+    setMessageFocus(false);
   }
 
 
-  function handleSubmit(e){
+  function handleSubmit(e, dname, cname, value){
     e.preventDefault();
-    if(graphOneData.length >= 12) { return };
-    if(graphOneInputVal === '') { return };
+    if(dname.length >= 12) { return };
+    if(value === '') { return };
     let newObject = {
-      "id": graphOneData.length + 1,
-      "amount": graphOneInputVal
+      "id": dname.length + 1,
+      "amount": value
     };
-    setGraphOneInputVal('');
-    db.collection('graph-one-data').doc(`21-${namespace[newObject.id - 1]}`).set(newObject);
+    db.collection(cname).doc(`21-${namespace[newObject.id - 1]}`).set(newObject);
     let arraySetter = [];
-    db.collection('graph-one-data').get()
+    db.collection(cname).get()
     .then((snapshot)=>{
       snapshot.docs.forEach(doc =>{
         arraySetter = [...arraySetter, doc.data()];
         });
-      setGraphOneData(arraySetter);
+
+        switch(dname){
+          case graphOneData : 
+            setGraphOneData(arraySetter);
+            break;
+          case graphTwoData :
+            setGraphTwoData(arraySetter);
+            break;
+          default : 
+            break;
+        }
     });
   }
 
+  function handleLogin(res){
+    setisUserLogIn(true);
+    let userEmail = res.profileObj.email;
+    emailCheck.includes(userEmail)? 
+    setIsAdmin(true) :
+    setIsAdmin(false);
 
-  function handleLogin(){
-    fire.auth().signInWithEmailAndPassword(email, password)
-    .catch(err=>{
-      switch(err.code){
-        case "auth/invalid-email":
-        case "auth/user-disabled":
-        case "auth/user-not-found":
-          setEmailError(err.message);
-          break;
-        case 'auth/wrong-password':
-          setPasswordError(err.message);
-          setPassword('');
-          break;
-      }
-    });
-  };
+  }
 
 
-  function handleSignup(){
-    if(!validateEmail(email)){
-      setEmailError('Not A Point of Rental Email');
-      return;
-    } 
-    fire.auth().createUserWithEmailAndPassword(email, password)
-    .catch(err=>{
-      switch(err.code){
-        case "auth/email-already-in-use":
-        case "auth/invail-email":
-          setEmailError(err.message);
-          break;
-        case 'auth/weak-password':
-          setPasswordError(err.message);
-          setPassword('');
-          break;
-      }
-    });
-  };
-
-
-  function handleLogout(){
-    fire.auth().signOut();
-  };
-
-
-  function handleArryChange(e, arr){
+  function handleArryChange(e, cname, arr){
     e.preventDefault();
     arr.forEach((obj, index)=>{
-      db.collection('graph-one-data').doc(`21-${namespace[index]}`).set({ "id": obj.id, "amount": obj.amount});
+      db.collection(cname).doc(`21-${namespace[index]}`).set({ "id": obj.id, "amount": obj.amount});
     });
     let arraySetter = [];
-    db.collection('graph-one-data').get()
+    db.collection(cname).get()
       .then((snapshot)=>{
         snapshot.docs.forEach(doc =>{
           arraySetter = [...arraySetter, doc.data()];
           });
-        setGraphOneData(arraySetter);
+          switch(cname){
+            case 'graph-one-data': 
+              setGraphOneData(arraySetter);
+              break;
+            case 'second-graph-data':
+              setGraphTwoData(arraySetter);
+              break;
+            default : 
+              break;
+          }
     });
   };
-
-
-  function authListener(){
-    fire.auth().onAuthStateChanged((user)=>{
-    user ? setUser(user) : setUser('');
-    });
-  };
-
-
-  useEffect(()=>{
-    authListener();
-  }, []);
-
-
-  useEffect(()=>{
-    emailCheck.includes(user.email)? 
-      setIsAdmin(true) :
-      setIsAdmin(false);
-  }, [user]);
 
 
   useEffect(() => {
@@ -140,25 +132,35 @@ function App() {
     });
   }, []);
 
+  useEffect(() => {
+    let arraySetter = [];
+    db.collection('second-graph-data').get()
+    .then((snapshot)=>{
+      snapshot.docs.forEach(doc =>{
+        arraySetter = [...arraySetter, doc.data()];
+        });
+      setGraphTwoData(arraySetter);
+    });
+  }, []);
 
-  const loginProps = {emailError, passwordError, email, setEmail, password, setPassword, user, handleLogin, handleSignup, wantsToSignIn, setwantsToSignin};
-  const inputProps = {graphOneInputVal, handleChange, handleSubmit, graphOneData, handleLogout, handleArryChange, isAdmin};
-  const homepageProps = {graphOneData, handleLogout, isAdmin};
 
+  const loginProps = {handleLogin, GoogleLogin, clientID};
+  const inputProps = { handleSubmit, graphOneData, graphTwoData, handleArryChange, GoogleLogout};
+  const homepageProps = {nameFocus, setNameFocus, emailFocus, setEmailFocus, messageFocus, setMessageFocus, isAdmin, graphOneData, graphTwoData, handleFormSubmit, formName, setFormName, setFormEmail, formEmail, formMessage, setFormMessage, GoogleLogout, setisUserLogIn};
 
   return (
     <>
       <Router>
-        <Route exact path = '/'>
-          {user ? <Homepage {...homepageProps}/> : <LoginPage {...loginProps}/>}
-        </Route>
-        <Route exact path = '/input'>
-          {isAdmin && user ?
-            <DataInput {...inputProps}/> :
-            <Redirect to = '/'/>
-          }
-        </Route>
-      </Router>
+      <Route exact path = '/bhag'>
+        {isUserLogIn ? <Homepage {...homepageProps}/> : <LoginPage {...loginProps}/>}
+      </Route>
+      <Route exact path = '/input'>
+        {isAdmin ?
+          <DataInput {...inputProps}/> :
+          <Redirect to = '/bhag'/>
+        }
+      </Route>
+    </Router>
     </>
   );
 };

@@ -1,0 +1,30 @@
+.form--container{
+    padding: 3em 0em;
+    &__form{
+        margin: 2em 0em;
+        &__name{
+            &__label{
+                top: 1.35em;
+                left: 11%;
+            }
+        }  
+        &__email{
+            &__label{
+                top: 1.35em;
+                left: 7.5%;
+            }
+        }   
+        &__message{
+            &__label{
+                top: 1.35em;
+                left: 10.1%;
+            }
+            &__input{
+                resize: none;
+            }
+        }    
+    }
+}
+
+
+

@@ -6,4 +6,6 @@ const emailCheck = [
 
 const namespace = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l'];
 
-export  {emailCheck, namespace};
+const clientID = "928484525410-2eq961tsef7le5e98skiv8a70mcu254j.apps.googleusercontent.com"
+
+export  {emailCheck, namespace, clientID};
